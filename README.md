@@ -22,7 +22,7 @@ BookRepository는 아래의 API를 제공합니다.
 - 이 문제를 해결하는 정답은 많습니다.
 - 다만 final ExecutorService executors = Executors.newFixedThreadPool(9);와 같이 9개의 스레드로 초기화 한 Thread pool의 활용을 극대화 하여 수행시간을 최대한 단축 할 수 있게 소스코드를 작성 해 주세요.
 
-**BookRepository Class**
+**BookRepository.class**
 ```
 class BookRepository {
     private final List<String> categories;
@@ -63,7 +63,7 @@ class BookRepository {
 
 ```
 
-**HomeWork Class**
+**HomeWork.class**
 
 ```
 public class Homework {
