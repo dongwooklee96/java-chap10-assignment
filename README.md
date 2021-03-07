@@ -2,6 +2,9 @@
 
 비동기 처리와 순서성에 대해서 공부하게 되었으며, `Future`, `Executors`, `ComputableFuture`에 대해서 학습하였습니다.
 
+- 과제는 `JDK15`로 작성되었습니다.
+- 과제 진행사항은 블로그에 정리되어있습니다.
+
 ## 과제
 
 아래와 같이 각 카테고리 (IT, FANTASY, SCIENCE) 별 세개의 책을 가지고 있는 저장소 BookRepository가 있습니다.
