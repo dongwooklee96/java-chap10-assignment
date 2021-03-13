@@ -1,9 +1,14 @@
-import java.util.Collection;
+import static java.util.concurrent.CompletableFuture.allOf;
+import static java.util.concurrent.CompletableFuture.runAsync;
+import static java.util.concurrent.CompletableFuture.supplyAsync;
+import static java.util.stream.Collectors.toList;
+
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
+import domain.Book;
 import repository.BookRepository;
 
 public class HomeWork {
@@ -23,17 +28,19 @@ public class HomeWork {
     }
 
     public void updateAllBook(String author, ExecutorService executors) {
-        repository.retrieveCategories().parallelStream()
-                .map(category -> CompletableFuture.supplyAsync(() -> repository.retrieveBooksByCategory(category)))
-                .collect(Collectors.toList())
-        .parallelStream()
-        .map(CompletableFuture::join)
-        .flatMap(Collection::parallelStream)
-        .collect(Collectors.toList())
-        .parallelStream()
-        .map(book -> CompletableFuture.runAsync(() -> repository.updateAuthor(book, author), executors))
-        .collect(Collectors.toList())
-        .forEach(CompletableFuture::join);
-        executors.shutdown();
+        final List<CompletableFuture<List<Book>>> futures
+            = repository.retrieveCategories().stream()
+            .map(category -> supplyAsync(() -> repository.retrieveBooksByCategory(category), executors))
+            .collect(toList());
+
+        final List<CompletableFuture<Void>> updateFutures
+            = futures.stream()
+            .map(future -> future.thenCompose(books -> allOf(
+                books.stream()
+                    .map(book -> runAsync(() -> repository.updateAuthor(book, author), executors))
+                    .toArray(CompletableFuture[]::new)
+            )))
+            .collect(toList());
+        updateFutures.forEach(CompletableFuture::join);
     }
 }
